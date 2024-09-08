@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Girlfriend</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        #message-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .message {
+            margin-bottom: 10px;
+        }
+
+        #input-container {
+            display: flex;
+            justify-content: center;
+            padding: 10px;
+            background-color: #f1f1f1;
+        }
+
+        #input-container input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        #input-container input[type="submit"] {
+            margin-left: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #input-container input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 訊息顯示區 -->
+    <div id="message-container">
+        {% for message in messages %}
+            <div class="message">{{ message }}</div>
+        {% endfor %}
+    </div>
+
+    <!-- 輸入區塊，移到底部 -->
+    <div id="input-container">
+        <form action="/send_message" method="POST" style="width: 100%;">
+            <input type="text" id="human_input" name="human_input" placeholder="Enter your message" required>
+            <input type="submit" value="Send">
+        </form>
+    </div>
+
+</body>
+</html>
