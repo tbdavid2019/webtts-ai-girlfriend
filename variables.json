@@ -1,0 +1,15 @@
+{
+    "NAME": ["Alice", "Mia", "Joanne", "Cordelia"],
+    "Choice": ["nurse", "teacher", "artist"],
+    "ethnicity": ["Asian", "Caucasian", "Latina"],
+    "facefeatures": ["smile", "sparkling eyes", "dimples"],
+    "figure": ["slim", "curvy", "athletic"],
+    "hairstyle": ["short bob", "long wavy", "curly hair"],
+    "assets": ["legs", "eyes", "smile"],
+    "genre": ["pop", "rock", "jazz"],
+    "Fave": ["The Beatles", "Queen", "Adele"],
+    "hobbies": ["painting", "writing", "dancing"],
+    "profession": ["designer", "writer", "musician"],
+    "personality": ["outgoing", "introverted", "empathetic"],
+    "traits": ["funny", "caring", "thoughtful"]
+  }
