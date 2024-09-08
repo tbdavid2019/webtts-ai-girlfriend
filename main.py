@@ -1,14 +1,15 @@
 import json
 import random
-from flask import Flask, render_template, request, redirect, url_for, session
+import threading  # 導入 threading 模組
+from quart import Quart, render_template, request, redirect, url_for, session
 from dotenv import find_dotenv, load_dotenv
 from openai import OpenAI
 import os
 from pathlib import Path
 from playsound import playsound
 
-# 初始化 Flask 應用
-app = Flask(__name__)
+# 初始化 Quart 應用
+app = Quart(__name__)
 app.secret_key = 'your_secret_key'  # 用於 session 的密鑰
 
 # 加載環境變量
@@ -44,7 +45,7 @@ def generate_system_prompt():
     return prompt_template.format(**selected_vars)  # 用變量填充模板
 
 # 使用 streaming 生成 AI 回應
-def get_response_from_ai_gf(human_input):
+async def get_response_from_ai_gf(human_input):
     # 使用隨機變量生成 system prompt
     system_prompt = generate_system_prompt()
 
@@ -72,7 +73,7 @@ def get_response_from_ai_gf(human_input):
     
     return full_response
 
-# 生成語音並播放
+# 異步生成語音並播放
 def get_voice_message(message):
     speech_file_path = Path(__file__).parent / "speech.mp3"
     
@@ -91,18 +92,23 @@ def get_voice_message(message):
     playsound(str(speech_file_path))
     os.remove(speech_file_path)
 
+# 啟動新的線程來播放語音
+def start_voice_thread(message):
+    thread = threading.Thread(target=get_voice_message, args=(message,))
+    thread.start()
+
 # 主頁面
 @app.route("/", methods=["GET"])
-def home():
+async def home():
     if "messages" not in session:
         session["messages"] = []  # 初始化訊息列表
-    return render_template("index.html", messages=session["messages"])
+    return await render_template("index.html", messages=session["messages"])
 
 # 發送訊息
 @app.route('/send_message', methods=['POST'])
-def send_message():
+async def send_message():
     # 獲取輸入
-    human_input_zh = request.form['human_input']
+    human_input_zh = (await request.form)['human_input']
 
     # 初始化 session 訊息列表
     if "messages" not in session:
@@ -112,16 +118,16 @@ def send_message():
     session["messages"].append(f"你: {human_input_zh}")
 
     # 獲取 AI 回應
-    ai_output_zh = get_response_from_ai_gf(human_input_zh)
+    ai_output_zh = await get_response_from_ai_gf(human_input_zh)
 
     # 添加 AI 回應
-    session["messages"].append(f"Cordelia: {ai_output_zh}")
-
-    # 播放語音
-    get_voice_message(ai_output_zh)
+    session["messages"].append(f"女友: {ai_output_zh}")
 
     # 保存 session 變更
     session.modified = True
+
+    # 啟動語音播放的線程，文字會先顯示出來
+    start_voice_thread(ai_output_zh)
 
     # 重定向回主頁
     return redirect(url_for("home"))
